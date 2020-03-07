@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="form" type="ca.javateacher.loancalculator.model.LoanForm"*/-->
+<!--/*@thymesVar id="errors" type="java.util.ArrayList<java.lang.String>"*/-->
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+          integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+    <link th:href="@{css/main.css}" href="../static/css/main.css" rel="stylesheet" type="text/css"/>
+    <title>Input</title>
+</head>
+<body>
+<main>
+    <h1>Input Loan Data</h1>
+    <form method="get"
+          th:action="@{Calculate.do}" action="Output.html"
+          th:object="${form}">
+        <div th:if="${#fields.hasErrors('*')}">
+            <h3 class="error">Input Errors</h3>
+            <ul>
+                <li th:each="e: ${#fields.errors('*')}" th:text="${e}" class="error">Input Error</li>
+            </ul>
+            <h2>Input Data</h2>
+        </div>
+
+        <p th:if="${#fields.hasErrors('loanAmount')}" th:errors="*{loanAmount}"
+           class="error">Amount Input Error</p>
+        <p><label for="amount">Loan Amount</label>
+            <input id="amount" type="text" th:text="${loanAmount}" th:field="*{loanAmount}" size="10"></p>
+
+        <p th:if="${#fields.hasErrors('annualInterestRate')}" th:errors="*{annualInterestRate}"
+              class="error">Interest Input Error</p>
+        <p>
+            <label for="rate">Annual Interest</label>
+            <input id="rate" type="text" th:text="${annualInterest}" th:field="*{annualInterestRate}" size="10">
+        </p>
+
+        <p th:if="${#fields.hasErrors('numberOfYears')}" th:errors="*{numberOfYears}"
+           class="error">Years' Input Error</p>
+        <p><label for="years">Number of Years</label>
+            <input id="years" type="text" th:text="${numOfYears}" th:field="*{numberOfYears}" size="10"></p>
+
+        <p>
+            <label>&nbsp;</label><input type="submit" value="Calculate">
+        </p>
+    </form>
+</main>
+</body>
+</html>
