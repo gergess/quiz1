@@ -34,26 +34,25 @@ public class LoanCalcController {
     }
 
     @RequestMapping(value={"/","/Input.do"})
-    public ModelAndView input(@CookieValue(value = "loanAmount", defaultValue = "") String loanAmount,
-                              @CookieValue(value = "annualInterest", defaultValue = "") String annualInterest,
-                              @CookieValue(value = "numOfYears", defaultValue = "") String numOfYears,
-                              HttpServletResponse response){
-        if (loanAmount.isEmpty() || annualInterest.isEmpty() || numOfYears.isEmpty()){
-            Cookie cookie = new Cookie("empty", "empty");
+    public ModelAndView input(@CookieValue(value = "loanAmountC", defaultValue = "") String loanAmount,
+                              @CookieValue(value = "annualInterestC", defaultValue = "") String annualInterest,
+                              @CookieValue(value = "numOfYearsC", defaultValue = "") String numOfYears){
 
-            cookie.setMaxAge(7*24*60*60);
-            response.addCookie(cookie);
-            return new ModelAndView("Input","form", new LoanForm());
-        }else{
+        if (loanAmount.isEmpty() || annualInterest.isEmpty() || numOfYears.isEmpty()) {
+
+            return new ModelAndView("Input", "form", new LoanForm());
+        } else {
             String amount = cookieEncoder.decode(loanAmount);
             String interest = cookieEncoder.decode(annualInterest);
             String years = cookieEncoder.decode(numOfYears);
 
-            ModelAndView modelAndView = new ModelAndView("Input");
+            LoanForm form = new LoanForm();
 
-            modelAndView.addObject("loanAmount", loanAmount);
-            modelAndView.addObject("annualInterest", annualInterest);
-            modelAndView.addObject("numOfYears", numOfYears);
+            form.setLoanAmount(amount);
+            form.setAnnualInterestRate(interest);
+            form.setNumberOfYears(years);
+
+            ModelAndView modelAndView = new ModelAndView("Input", "form", form);
 
             return modelAndView;
         }
@@ -62,17 +61,13 @@ public class LoanCalcController {
 
     @RequestMapping("/Calculate.do")
     public ModelAndView calculate(
-            @RequestParam(defaultValue = "") String loanAmount,
-            @CookieValue(value = "loanAmount", defaultValue = "") String loanAmountC,
-            @RequestParam(defaultValue = "") String annualInterest,
-            @CookieValue(value = "annualInterest", defaultValue = "") String annualInterestC,
-            @RequestParam(defaultValue = "") String numOfYears,
-            @CookieValue(value = "numOfYears", defaultValue = "") String numOfYearsC,
+            @CookieValue(value = "loanAmountC", defaultValue = "") String loanAmountC,
+            @CookieValue(value = "annualInterestC", defaultValue = "") String annualInterestC,
+            @CookieValue(value = "numOfYearsC", defaultValue = "") String numOfYearsC,
             HttpServletResponse response,
             @Validated @ModelAttribute(name="form") LoanForm form,
             BindingResult bindingResult){
 
-        logger.trace("Received a user input.");
         // check the validation errors
         if (bindingResult.hasErrors()) {
             logger.trace("The received data is invalid, going back to the inputs.");
@@ -85,29 +80,33 @@ public class LoanCalcController {
             // if no errors, the input data is valid
             // convert the data into numbers for the calculation
             // put the numbers in the object for the calculation
+
             Loan loan = new Loan();
-            loan.setLoanAmount(Double.parseDouble(form.getLoanAmount()));
-            loan.setAnnualInterestRate(Double.parseDouble(form.getAnnualInterestRate()));
-            loan.setNumberOfYears(Integer.parseInt(form.getNumberOfYears()));
-
-
-
-            Cookie amountCookie = new Cookie("loanAmount", cookieEncoder.encode(loanAmount));
-            Cookie interestCookie = new Cookie("annualInterest", cookieEncoder.encode(annualInterest));
-            Cookie yearsCookie = new Cookie("numOfYears", cookieEncoder.encode(numOfYears));
-            amountCookie.setMaxAge(7*24*60*60);
-            interestCookie.setMaxAge(7*24*60*60);
-            yearsCookie.setMaxAge(7*24*60*60);
-
-            response.addCookie(amountCookie);
-            response.addCookie(interestCookie);
-            response.addCookie(yearsCookie);
 
             ModelAndView mv = new ModelAndView("Output", "loan", loan);
 
-            mv.addObject("loanAmount", loan);
-            mv.addObject("annualInterest", annualInterest);
-            mv.addObject("numOfYears", numOfYears);
+            if(loanAmountC.isEmpty() || annualInterestC.isEmpty() || numOfYearsC.isEmpty()){
+
+                loan.setLoanAmount(Double.parseDouble(form.getLoanAmount()));
+                loan.setAnnualInterestRate(Double.parseDouble(form.getAnnualInterestRate()));
+                loan.setNumberOfYears(Integer.parseInt(form.getNumberOfYears()));
+
+                Cookie amountCookie = new Cookie("loanAmountC", cookieEncoder.encode(form.getLoanAmount()));
+                Cookie interestCookie = new Cookie("annualInterestC", cookieEncoder.encode(form.getAnnualInterestRate()));
+                Cookie yearsCookie = new Cookie("numOfYearsC", cookieEncoder.encode(form.getNumberOfYears()));
+                amountCookie.setMaxAge(7*24*60*60);
+                interestCookie.setMaxAge(7*24*60*60);
+                yearsCookie.setMaxAge(7*24*60*60);
+
+                response.addCookie(amountCookie);
+                response.addCookie(interestCookie);
+                response.addCookie(yearsCookie);
+
+                mv.addObject("loanAmountC", form.getLoanAmount());
+                mv.addObject("annualInterestC", form.getAnnualInterestRate());
+                mv.addObject("numOfYearsC", form.getNumberOfYears());
+
+            }
 
             // make the object available to the Output page and show the page
             return mv ;

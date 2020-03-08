@@ -22,45 +22,45 @@ public class LoanFormValidator implements Validator {
         logger.trace("The validator is called to validate.");
         LoanForm form = (LoanForm) obj;
         if (form.getLoanAmount().trim().isEmpty()) {
-            errors.rejectValue("loanAmount", "NotBlank.loanAmount");
+            errors.rejectValue("loanAmount", "NotBlank.loanAmount.form.loanAmount");
         } else {
             try {
                 double amount = Double.parseDouble(form.getLoanAmount());
                 if(amount <= 0){
-                    errors.rejectValue("loanAmount", "Positive.loanAmount");
+                    errors.rejectValue("loanAmount", "Positive.loanAmount.form.loanAmount");
                 }
                 double cents = amount*100;
                 if(cents - Math.floor(cents) != 0.0){
-                    errors.rejectValue("loanAmount", "IntegerCents.loanAmount");
+                    errors.rejectValue("loanAmount", "IntegerCents.loanAmount.form.loanAmount");
                 }
             } catch (NumberFormatException e) {
-                errors.rejectValue("loanAmount", "Number.loanAmount");
+                errors.rejectValue("loanAmount", "Number.loanAmount.form.loanAmount");
             }
         }
 
         if (form.getAnnualInterestRate().trim().isEmpty()) {
-            errors.rejectValue("annualInterestRate", "NotBlank.annualInterestRate");
+            errors.rejectValue("annualInterestRate", "NotBlank.annualInterestRate.form.annualInterestRate");
         } else {
             try {
                 double rate = Double.parseDouble(form.getAnnualInterestRate());
                 if(rate <= 0){
-                    errors.rejectValue("annualInterestRate", "Positive.annualInterestRate");
+                    errors.rejectValue("annualInterestRate", "Positive.annualInterestRate.form.annualInterestRate");
                 }
             } catch (NumberFormatException e) {
-                errors.rejectValue("annualInterestRate", "Number.annualInterestRate");
+                errors.rejectValue("annualInterestRate", "Number.annualInterestRate.form.annualInterestRate");
             }
         }
 
         if (form.getNumberOfYears().trim().isEmpty()) {
-            errors.rejectValue("numberOfYears", "NotBlank.numberOfYears");
+            errors.rejectValue("numberOfYears", "NotBlank.numberOfYears.form.numberOfYears");
         } else {
             try {
                 int years = Integer.parseInt(form.getNumberOfYears().trim());
                 if(years <= 0 ){
-                    errors.rejectValue("numberOfYears", "Positive.numberOfYears");
+                    errors.rejectValue("numberOfYears", "Positive.numberOfYears.form.numberOfYears");
                 }
             } catch (NumberFormatException e) {
-                errors.rejectValue("numberOfYears", "Integer.numberOfYears");
+                errors.rejectValue("numberOfYears", "Integer.numberOfYears.form.numberOfYears");
             }
         }
     }
